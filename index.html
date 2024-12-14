@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spiral Matritsa</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background-color: #f4f4f9;
+            height: 100vh;
+        }
+        .container {
+            text-align: center;
+        }
+        input {
+            padding: 10px;
+            margin: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .matrix {
+            margin-top: 20px;
+            display: inline-block;
+            font-family: monospace;
+        }
+        .row {
+            display: flex;
+        }
+        .cell {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #ddd;
+            margin: 1px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Spiral Matritsa</h1>
+        <input type="number" id="matrixSize" placeholder="Matritsa o'lchami (n)">
+        <select id="direction">
+            <option value="true">Soat strelkasi bo'yicha</option>
+            <option value="false">Soat strelkasiga qarama-qarshi</option>
+        </select>
+        <button onclick="generateAndDisplayMatrix()">Matritsa Yaratish</button>
+        <div id="matrix" class="matrix"></div>
+    </div>
+
+    <script>
+        function generateSpiralMatrix(n, clockwise = true) {
+            const matrix = Array.from({ length: n }, () => Array(n).fill(0));
+            const directions = clockwise
+                ? [[0, 1], [1, 0], [0, -1], [-1, 0]]
+                : [[1, 0], [0, 1], [-1, 0], [0, -1]];
+
+            let row = 0, col = 0, dirIndex = 0, value = 1;
+
+            for (let i = 0; i < n * n; i++) {
+                matrix[row][col] = value++;
+
+                const nextRow = row + directions[dirIndex][0];
+                const nextCol = col + directions[dirIndex][1];
+
+                if (
+                    nextRow < 0 || nextRow >= n ||
+                    nextCol < 0 || nextCol >= n ||
+                    matrix[nextRow][nextCol] !== 0
+                ) {
+                    dirIndex = (dirIndex + 1) % 4;
+                }
+
+                row += directions[dirIndex][0];
+                col += directions[dirIndex][1];
+            }
+
+            return matrix;
+        }
+
+        function generateAndDisplayMatrix() {
+            const sizeInput = document.getElementById('matrixSize').value;
+            const directionInput = document.getElementById('direction').value === 'true';
+
+            if (!sizeInput || isNaN(sizeInput) || sizeInput <= 0) {
+                alert('Iltimos, to\'g\'ri o\'lcham kiriting!');
+                return;
+            }
+
+            const n = parseInt(sizeInput);
+            const matrix = generateSpiralMatrix(n, directionInput);
+
+            const matrixContainer = document.getElementById('matrix');
+            matrixContainer.innerHTML = '';
+
+            matrix.forEach(row => {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'row';
+
+                row.forEach(cell => {
+                    const cellDiv = document.createElement('div');
+                    cellDiv.className = 'cell';
+                    cellDiv.textContent = cell;
+                    rowDiv.appendChild(cellDiv);
+                });
+
+                matrixContainer.appendChild(rowDiv);
+            });
+        }
+    </script>
+</body>
+</html>
